@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ &OPT.siteName }} - 管理后台</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/gdtool/zhaopp/cfblog/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Editor.md -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.css" />
+
+    <!-- Scripts -->
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.js"></script>
+
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --accent-color: #00d4ff;
+            --accent-hover: #00b8e6;
+            --border-color: #333333;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-accent: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--secondary-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent-color);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            background: var(--primary-bg);
+        }
+
+        .content-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .content-body {
+            padding: 2rem;
+        }
+
+        /* Tab System */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--secondary-bg);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--secondary-bg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table td {
+            color: var(--text-secondary);
+        }
+
+        .table tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .table a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .table a:hover {
+            text-decoration: underline;
+        }
+
+        /* Select */
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23b0b0b0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Tags Input */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 45px;
+        }
+
+        .tag-item {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Editor Container */
+        .editor-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-left-color: var(--success-color);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border-left-color: var(--error-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-header {
+                padding: 1rem;
+            }
+
+            .content-body {
+                padding: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Hide/Show Elements */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">{{ &OPT.siteName }}</a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="dashboard">
+                            <i class="fas fa-tachometer-alt nav-icon"></i>
+                            仪表盘
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-tab="new">
+                            <i class="fas fa-plus nav-icon"></i>
+                            新建文章
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="list">
+                            <i class="fas fa-list nav-icon"></i>
+                            文章管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="config">
+                            <i class="fas fa-cog nav-icon"></i>
+                            系统设置
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="publish">
+                            <i class="fas fa-rocket nav-icon"></i>
+                            发布管理
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1 class="content-title" id="page-title">新建文章</h1>
+                <p class="content-subtitle" id="page-subtitle">创建和发布新的博客文章</p>
+            </header>
+
+            <div class="content-body">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-value">--</div>
+                            <div class="stat-label">总文章数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-value">--</div>
+                            <div class="stat-label">总访问量</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-value">--</div>
+                            <div class="stat-label">标签数量</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="stat-value">--</div>
+                            <div class="stat-label">分类数量</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">快速操作</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group">
+                                <button class="btn" onclick="switchTab('new')">
+                                    <i class="fas fa-plus"></i>
+                                    新建文章
+                                </button>
+                                <button class="btn btn-secondary" onclick="switchTab('list')">
+                                    <i class="fas fa-list"></i>
+                                    管理文章
+                                </button>
+                                <button class="btn btn-success" onclick="publish()">
+                                    <i class="fas fa-rocket"></i>
+                                    发布更新
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Article Tab -->
+                <div id="new" class="tab-content active">
+                    <form id="addNewForm">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title" id="labelNew">新建文章</h3>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" name="id" id="id">
+
+                                <div class="form-group">
+                                    <label class="form-label">文章标题 *</label>
+                                    <input type="text" class="form-control" name="title" id="title" placeholder="输入文章标题"
+                                        required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">特色图片</label>
+                                        <input type="url" class="form-control" name="img" id="img" placeholder="图片链接地址">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">永久链接 *</label>
+                                        <input type="text" class="form-control" name="link" id="link"
+                                            placeholder="article-link" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">发布时间 *</label>
+                                        <input type="datetime-local" class="form-control" name="createDate"
+                                            id="createDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">分类</label>
+                                        <select class="form-control form-select" multiple name="category[]"
+                                            id="category">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">标签</label>
+                                        <input type="text" class="form-control" name="tags" id="tags"
+                                            placeholder="标签1,标签2,标签3">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">权重</label>
+                                        <input type="text" class="form-control" name="priority" id="priority"
+                                            value="0.5" placeholder="0.0-1.0">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">更新频率</label>
+                                    <select class="form-control form-select" name="changefreq" id="changefreq">
+                                        <option value="daily" selected>Daily</option>
+                                        <option value="hourly">Hourly</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                        <option value="never">Never</option>
+                                        <option value="always">Always</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">文章内容</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="editor-container">
+                                    <div id="content"><textarea style="display:none;"></textarea></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn" onclick="saveAddNew()">
+                                <i class="fas fa-save"></i>
+                                保存文章
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo"></i>
+                                重置表单
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Article List Tab -->
+                <div id="list" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">文章列表</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table" id="articleList">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>标题</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <input type="hidden" name="page" id="page" value="1">
+                            <button class="btn btn-secondary" id="loadmore">
+                                <i class="fas fa-plus"></i>
+                                加载更多
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Config Tab -->
+                <div id="config" class="tab-content">
+                    <form id="configForm">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">网站配置</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">分类设置</label>
+                                    <textarea class="form-control" id="WidgetCategory" name="WidgetCategory" rows="4"
+                                        placeholder='["分类A","分类B","分类C"]'></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">菜单设置</label>
+                                    <textarea class="form-control" id="WidgetMenu" name="WidgetMenu" rows="6"
+                                        placeholder='[{"title":"菜单A","url":"/category/菜单A"},{"title":"菜单B","url":"/category/菜单B"}]'></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">友情链接</label>
+                                    <textarea class="form-control" id="WidgetLink" name="WidgetLink" rows="6"
+                                        placeholder='[{"title":"友链名称","url":"https://example.com"}]'></textarea>
+                                </div>
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn" onclick="saveConfig()">
+                                        <i class="fas fa-save"></i>
+                                        保存配置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <form id="importForm">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">数据管理</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">导入数据</label>
+                                    <textarea class="form-control" id="importJson" name="importJson" rows="4"
+                                        placeholder="粘贴完整的导出JSON数据"></textarea>
+                                </div>
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-warning" onclick="importBlog()">
+                                        <i class="fas fa-upload"></i>
+                                        导入数据
+                                    </button>
+                                    <a href="/admin/export/" class="btn btn-secondary">
+                                        <i class="fas fa-download"></i>
+                                        导出数据
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Publish Tab -->
+                <div id="publish" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">发布管理</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>注意：</strong>由于前端使用缓存，以下操作需要发布：新建文章、修改文章、修改后台配置、修改Workers配置。发布后前端生效需要Ctrl+F5强制刷新。
+                            </div>
+
+                            <button class="btn btn-success" onclick="publish()">
+                                <i class="fas fa-rocket"></i>
+                                立即发布
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let mdEditor;
+
+        $(function () {
+            // Initialize date input
+            $('#createDate').val(new Date().toISOString().slice(0, 16));
+
+            // Get configuration data
+            var categoryJson = <!--{categoryJson}-->;
+            var menuJson = < !--{ menuJson }-->;
+            var linkJson = < !--{ linkJson }-->;
+
+            // Initialize form values
+            $('#WidgetCategory').val(JSON.stringify(categoryJson, null, 2));
+            $('#WidgetMenu').val(JSON.stringify(menuJson, null, 2));
+            $('#WidgetLink').val(JSON.stringify(linkJson, null, 2));
+
+            // Populate category select
+            var category = $('#category');
+            category.empty();
+            for (var i = 0; i < categoryJson.length; i++) {
+                category.append('<option value="' + categoryJson[i] + '">' + categoryJson[i] + '</option>');
+            }
+
+            // Initialize markdown editor
+            mdEditor = editormd("content", {
+                height: 500,
+                path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
+                appendMarkdown: "# 开始写作...",
+                saveHTMLToTextarea: true,
+                mode: "markdown",
+                tex: true,
+                tocm: true,
+                codeFold: true,
+                theme: "dark",
+                previewTheme: "dark",
+                editorTheme: "pastel-on-dark"
+            });
+
+            // Load first page of articles
+            $("#loadmore").click();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update nav links
+            $('.nav-link').removeClass('active');
+            $(`.nav-link[data-tab="${tabName}"]`).addClass('active');
+
+            // Update content
+            $('.tab-content').removeClass('active');
+            $(`#${tabName}`).addClass('active');
+
+            // Update header
+            const titles = {
+                'dashboard': { title: '仪表盘', subtitle: '查看网站统计信息和快速操作' },
+                'new': { title: '新建文章', subtitle: '创建和发布新的博客文章' },
+                'list': { title: '文章管理', subtitle: '管理已发布的博客文章' },
+                'config': { title: '系统设置', subtitle: '配置网站基本信息和功能' },
+                'publish': { title: '发布管理', subtitle: '发布更新和清理缓存' }
+            };
+
+            if (titles[tabName]) {
+                $('#page-title').text(titles[tabName].title);
+                $('#page-subtitle').text(titles[tabName].subtitle);
+            }
+        }
+
+        // Nav link click handler
+        $('.nav-link').click(function (e) {
+            e.preventDefault();
+            const tab = $(this).data('tab');
+            switchTab(tab);
+        });
+
+        // Load articles
+        $("#loadmore").click(function () {
+            var page = $("#page").val();
+            var button = $(this);
+            var originalText = button.html();
+
+            button.html('<span class="spinner"></span> 加载中...');
+
+            $.ajax({
+                url: "/admin/getList/" + page + "/",
+                type: 'GET',
+                dataType: "json",
+                success: function (data) {
+                    var tableContent = "";
+                    $.each(data, function (i) {
+                        var info = data[i];
+                        tableContent += `
+                            <tr>
+                                <td>${info.id}</td>
+                                <td><a href="/admin/edit/${info.id}/">${info.title}</a></td>
+                                <td>${info.createDate.replace("T", " ")}</td>
+                                <td>
+                                    <a href="/admin/edit/${info.id}/" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+                                        <i class="fas fa-edit"></i> 编辑
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    $("#articleList tbody").append(tableContent);
+                    $("#page").val(parseInt(page) + 1);
+                },
+                complete: function () {
+                    button.html(originalText);
+                }
+            });
+        });
+
+        // Save new article
+        function saveAddNew() {
+            if (!$('#title').val() || !$('#createDate').val() || !$('#link').val()) {
+                showAlert('请填写必填字段', 'error');
+                return;
+            }
+
+            var postURL = "/admin/saveEdit/";
+            if (!$('#id').val()) {
+                postURL = "/admin/saveAddNew/";
+            }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: postURL,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify($("#addNewForm").serializeArray()),
+                success: function (result) {
+                    if (result.id) {
+                        $('#id').val(result.id);
+                        $('#labelNew').text("编辑文章: " + result.id);
+                        showAlert(result.msg, 'success');
+                    } else {
+                        showAlert('保存失败', 'error');
+                    }
+                },
+                error: function () {
+                    showAlert('网络错误，请重试', 'error');
+                }
+            });
+        }
+
+        // Save config
+        function saveConfig() {
+            if (!isJSON($('#WidgetCategory').val())) {
+                showAlert('分类格式错误', 'error');
+                return;
+            }
+            if (!isJSON($('#WidgetMenu').val())) {
+                showAlert('菜单格式错误', 'error');
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/admin/saveConfig/",
+                data: JSON.stringify($("#configForm").serializeArray()),
+                success: function (result) {
+                    showAlert(result.msg, result.rst ? 'success' : 'error');
+                }
+            });
+        }
+
+        // Import blog
+        function importBlog() {
+            if (!isJSON($('#importJson').val())) {
+                showAlert('导入格式错误', 'error');
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/admin/import/",
+                data: JSON.stringify($("#importForm").serializeArray()),
+                success: function (result) {
+                    showAlert(result.msg, result.rst ? 'success' : 'error');
+                }
+            });
+        }
+
+        // Publish
+        function publish() {
+            if (!confirm("确定要发布吗？发布将清理所有静态缓存，重新生成页面。")) {
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                url: "/admin/publish/",
+                success: function (result) {
+                    showAlert(result.msg, result.rst ? 'success' : 'warning');
+                }
+            });
+        }
+
+        // Reset form
+        function resetForm() {
+            if (confirm('确定要重置表单吗？未保存的内容将丢失。')) {
+                $('#addNewForm')[0].reset();
+                $('#id').val('');
+                $('#labelNew').text('新建文章');
+                $('#createDate').val(new Date().toISOString().slice(0, 16));
+                if (mdEditor) {
+                    mdEditor.clear();
+                }
+            }
+        }
+
+        // Utility functions
+        function isJSON(str) {
+            if (typeof str == 'string') {
+                try {
+                    var obj = JSON.parse(str);
+                    return typeof obj == 'object' && obj;
+                } catch (e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        function showAlert(message, type) {
+            var alertClass = 'alert-' + (type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'success');
+            var icon = type === 'error' ? 'fa-times-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle';
+
+            var alert = $(`
+                <div class="alert ${alertClass}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    <i class="fas ${icon}"></i>
+                    ${message}
+                </div>
+            `);
+
+            $('body').append(alert);
+
+            setTimeout(function () {
+                alert.fadeOut(function () {
+                    alert.remove();
+                });
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

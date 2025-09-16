@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑文章 - {{ &OPT.siteName }}</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/gdtool/zhaopp/cfblog/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Editor.md -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.css" />
+
+    <!-- Scripts -->
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.js"></script>
+
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --accent-color: #00d4ff;
+            --accent-hover: #00b8e6;
+            --border-color: #333333;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-accent: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        /* Article Form */
+        .article-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: var(--secondary-bg);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23b0b0b0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Editor Container */
+        .editor-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+        }
+
+        .editor-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--secondary-bg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background: var(--secondary-bg);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-body {
+            padding: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-published {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-draft {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        /* Meta Info */
+        .meta-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-left-color: var(--success-color);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border-left-color: var(--error-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/admin/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回后台
+            </a>
+            <h1 class="header-title">编辑文章</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn" onclick="saveEdit()">
+                <i class="fas fa-save"></i>
+                保存文章
+            </button>
+            <button class="btn btn-danger" onclick="deleteArticle()">
+                <i class="fas fa-trash"></i>
+                删除文章
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Article Form -->
+        <main class="article-form">
+            <div class="form-header">
+                <h2 class="form-title">文章编辑</h2>
+            </div>
+
+            <div class="form-body">
+                <form id="editForm">
+                    <input type="hidden" name="id" id="id" value="">
+
+                    <div class="form-group">
+                        <label class="form-label">文章标题 *</label>
+                        <input type="text" class="form-control" name="title" id="title" placeholder="输入文章标题" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">特色图片</label>
+                            <input type="url" class="form-control" name="img" id="img" placeholder="图片链接地址">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">永久链接 *</label>
+                            <input type="text" class="form-control" name="link" id="link" placeholder="article-link"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">发布时间 *</label>
+                            <input type="datetime-local" class="form-control" name="createDate" id="createDate"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">分类</label>
+                            <select class="form-control form-select" multiple name="category[]" id="category">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">标签</label>
+                            <input type="text" class="form-control" name="tags" id="tags" placeholder="标签1,标签2,标签3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">权重</label>
+                            <input type="text" class="form-control" name="priority" id="priority" value="0.5"
+                                placeholder="0.0-1.0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">更新频率</label>
+                        <select class="form-control form-select" name="changefreq" id="changefreq">
+                            <option value="daily">Daily</option>
+                            <option value="hourly">Hourly</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                            <option value="never">Never</option>
+                            <option value="always">Always</option>
+                        </select>
+                    </div>
+
+                    <div class="editor-section">
+                        <label class="form-label">文章内容 *</label>
+                        <div class="editor-container">
+                            <div id="content"><textarea style="display:none;"></textarea></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Publish Status -->
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-eye"></i>
+                        发布状态
+                    </h3>
+                </div>
+                <div class="sidebar-body">
+                    <div class="status-badge status-published">
+                        <i class="fas fa-check-circle"></i>
+                        已发布
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 1rem;">
+                        <button class="btn btn-full" onclick="saveEdit()">
+                            <i class="fas fa-save"></i>
+                            保存更改
+                        </button>
+                        <button class="btn btn-secondary btn-full" onclick="previewArticle()">
+                            <i class="fas fa-eye"></i>
+                            预览文章
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Info -->
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-info-circle"></i>
+                        文章信息
+                    </h3>
+                </div>
+                <div class="sidebar-body">
+                    <div class="meta-info">
+                        <div class="meta-item">
+                            <span class="meta-label">文章ID</span>
+                            <span class="meta-value" id="article-id">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">创建时间</span>
+                            <span class="meta-value" id="create-time">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">字符数</span>
+                            <span class="meta-value" id="char-count">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">阅读时间</span>
+                            <span class="meta-value" id="read-time">-- 分钟</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-tools"></i>
+                        快速操作
+                    </h3>
+                </div>
+                <div class="sidebar-body">
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-full" onclick="resetForm()">
+                            <i class="fas fa-undo"></i>
+                            重置表单
+                        </button>
+                        <button class="btn btn-success btn-full" onclick="publishArticle()">
+                            <i class="fas fa-rocket"></i>
+                            立即发布
+                        </button>
+                        <button class="btn btn-danger btn-full" onclick="deleteArticle()">
+                            <i class="fas fa-trash"></i>
+                            删除文章
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        let mdEditor;
+        let originalData = {};
+
+        $(function () {
+            // Get configuration and article data
+            var categoryJson = <!--{categoryJson}-->;
+            var articleData = < !--{ articleJson }-->;
+
+            // Store original data for comparison
+            originalData = JSON.parse(articleData);
+
+            // Populate category select
+            var category = $('#category');
+            category.empty();
+            for (var i = 0; i < categoryJson.length; i++) {
+                category.append('<option value="' + categoryJson[i] + '">' + categoryJson[i] + '</option>');
+            }
+
+            // Populate form with article data
+            populateForm(originalData);
+
+            // Initialize markdown editor
+            mdEditor = editormd("content", {
+                height: 600,
+                path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
+                saveHTMLToTextarea: true,
+                mode: "markdown",
+                tex: true,
+                tocm: true,
+                codeFold: true,
+                theme: "dark",
+                previewTheme: "dark",
+                editorTheme: "pastel-on-dark",
+                markdown: originalData.contentMD || ""
+            });
+
+            // Update character count
+            updateMetaInfo();
+
+            // Auto-save every 30 seconds
+            setInterval(autoSave, 30000);
+        });
+
+        function populateForm(data) {
+            $('#id').val(data.id);
+            $('#title').val(data.title);
+            $('#img').val(data.img || '');
+            $('#link').val(data.link);
+            $('#createDate').val(data.createDate.replace('Z', '').slice(0, 16));
+            $('#tags').val(Array.isArray(data.tags) ? data.tags.join(',') : data.tags);
+            $('#priority').val(data.priority || '0.5');
+            $('#changefreq').val(data.changefreq || 'daily');
+
+            // Select categories
+            if (Array.isArray(data.category)) {
+                data.category.forEach(cat => {
+                    $(`#category option[value="${cat}"]`).prop('selected', true);
+                });
+            }
+
+            // Update sidebar info
+            $('#article-id').text(data.id);
+            $('#create-time').text(data.createDate.replace('T', ' ').slice(0, 16));
+        }
+
+        function updateMetaInfo() {
+            if (mdEditor) {
+                const content = mdEditor.getMarkdown();
+                const charCount = content.length;
+                const readTime = Math.ceil(charCount / 500); // Assume 500 chars per minute
+
+                $('#char-count').text(charCount.toLocaleString());
+                $('#read-time').text(readTime + ' 分钟');
+            }
+        }
+
+        function saveEdit() {
+            if (!$('#title').val() || !$('#createDate').val() || !$('#link').val()) {
+                showAlert('请填写必填字段', 'error');
+                return;
+            }
+
+            const saveBtn = $('button:contains("保存文章")');
+            const originalText = saveBtn.html();
+            saveBtn.html('<span class="spinner"></span> 保存中...');
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/admin/saveEdit/",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify($("#editForm").serializeArray()),
+                success: function (result) {
+                    if (result.id) {
+                        showAlert(result.msg, 'success');
+                        updateMetaInfo();
+                    } else {
+                        showAlert('保存失败', 'error');
+                    }
+                },
+                error: function () {
+                    showAlert('网络错误，请重试', 'error');
+                },
+                complete: function () {
+                    saveBtn.html(originalText);
+                }
+            });
+        }
+
+        function autoSave() {
+            if (hasChanges()) {
+                console.log('Auto-saving...');
+                saveEdit();
+            }
+        }
+
+        function hasChanges() {
+            // Simple change detection
+            const currentTitle = $('#title').val();
+            const currentContent = mdEditor ? mdEditor.getMarkdown() : '';
+
+            return currentTitle !== originalData.title ||
+                currentContent !== (originalData.contentMD || '');
+        }
+
+        function deleteArticle() {
+            if (!confirm('确定要删除这篇文章吗？此操作无法撤销！')) {
+                return;
+            }
+
+            const articleId = $('#id').val();
+
+            $.ajax({
+                type: "GET",
+                url: `/admin/delete/${articleId}/`,
+                dataType: "json",
+                success: function (result) {
+                    if (result.rst) {
+                        showAlert('文章已删除', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/admin/';
+                        }, 2000);
+                    } else {
+                        showAlert('删除失败', 'error');
+                    }
+                },
+                error: function () {
+                    showAlert('网络错误，请重试', 'error');
+                }
+            });
+        }
+
+        function previewArticle() {
+            const articleId = $('#id').val();
+            const link = $('#link').val();
+
+            if (articleId && link) {
+                window.open(`/article/${articleId}/${link}.html`, '_blank');
+            } else {
+                showAlert('请先保存文章', 'warning');
+            }
+        }
+
+        function resetForm() {
+            if (confirm('确定要重置表单吗？未保存的更改将丢失。')) {
+                populateForm(originalData);
+                if (mdEditor) {
+                    mdEditor.setMarkdown(originalData.contentMD || '');
+                }
+            }
+        }
+
+        function publishArticle() {
+            if (confirm('确定要发布更新吗？这将清理缓存并重新生成页面。')) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    url: "/admin/publish/",
+                    success: function (result) {
+                        showAlert(result.msg, result.rst ? 'success' : 'warning');
+                    }
+                });
+            }
+        }
+
+        function showAlert(message, type) {
+            var alertClass = 'alert-' + (type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'success');
+            var icon = type === 'error' ? 'fa-times-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle';
+
+            var alert = $(`
+                <div class="alert ${alertClass}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    <i class="fas ${icon}"></i>
+                    ${message}
+                </div>
+            `);
+
+            $('body').append(alert);
+
+            setTimeout(function () {
+                alert.fadeOut(function () {
+                    alert.remove();
+                });
+            }, 3000);
+        }
+
+        // Update meta info when editor content changes
+        if (mdEditor) {
+            mdEditor.on('change', function () {
+                updateMetaInfo();
+            });
+        }
+
+        // Keyboard shortcuts
+        $(document).keydown(function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.which) {
+                    case 83: // Ctrl+S
+                        e.preventDefault();
+                        saveEdit();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
