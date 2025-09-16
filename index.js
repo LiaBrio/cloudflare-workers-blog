@@ -13,9 +13,10 @@ const OPT = {
     "recentlySize" : 6,//最近文章数
     "readMoreLength":150,//阅读更多截取长度	
     "cacheTime" : 60*60*24*0.5, //网页缓存时长(秒),建议=文章更新频率
-    "themeURL" : "https://raw.githubusercontent.com/gdtool/cloudflare-workers-blog/master/themes/default2.0/", // 模板地址,以 "/"" 结尾
+    "themeURL" : "https://raw.githubusercontent.com/gdtool/cloudflare-workers-blog/master/themes/JustNews2/", // 模板地址,以 "/"" 结尾
+    "logo" : "https://images.chainseek.top/2025-09/logo.png", // 自定义Logo地址
     "html404" : `<b>404</b>`,//404页面代码
-    "codeBeforHead":``,//其他代码,显示在</head>前
+    "codeBeforHead":`<style>.navbar-action { display: none !important; }</style>`,//其他代码,显示在</head>前
     "codeBeforBody":``,//其他代码,显示在</body>前
     "commentCode":``,//评论区代码
     "widgetOther":``,//20201224新增参数,用于右侧 小部件扩展
