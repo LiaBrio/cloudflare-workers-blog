@@ -38,6 +38,80 @@
 	<link rel='stylesheet' id='mux_video_block_style-css'
 		href='https://cdn.jsdelivr.net/gh/newexsexy/wp@master/wp-content/plugins/ilab-media-tools/public/blocks/mediacloud-mux.blocks.style.min.css'
 		type='text/css' media='all' />
+	<!-- Modern rounded corners and shadows -->
+	<style>
+		:root {
+			--jn2-radius: 14px;
+			--jn2-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+			--jn2-shadow-lg: 0 20px 40px rgba(0, 0, 0, .12);
+		}
+
+		/* cards & panels */
+		.header .container,
+		.sec-panel,
+		.sec-panel .sec-panel-body,
+		.post-loop .item,
+		.post-loop .item .item-content,
+		.sidebar .widget,
+		.footer .container,
+		.pagination li a,
+		.action .action-item {
+			border-radius: var(--jn2-radius);
+			box-shadow: var(--jn2-shadow);
+			overflow: hidden;
+			background-clip: padding-box;
+		}
+
+		/* item image card */
+		.post-loop .item .item-img,
+		.post-loop .item .item-img-inner,
+		.post-loop .item .item-img img {
+			border-radius: var(--jn2-radius);
+			overflow: hidden;
+		}
+
+		/* hover elevation */
+		.post-loop .item:hover,
+		.sidebar .widget:hover {
+			box-shadow: var(--jn2-shadow-lg);
+			transform: translateY(-2px);
+			transition: box-shadow .25s ease, transform .25s ease;
+		}
+
+		/* widget inner spacing & titles */
+		.sidebar .widget {
+			background: #fff
+		}
+
+		.sidebar .widget .widget-title span {
+			border-radius: 999px;
+			padding: .2rem .8rem;
+			background: rgba(0, 0, 0, .04);
+		}
+
+		/* pagination buttons */
+		.pagination li a {
+			background: #fff;
+			border: 1px solid rgba(0, 0, 0, .06);
+		}
+
+		.pagination li a:hover {
+			box-shadow: var(--jn2-shadow-lg)
+		}
+
+		/* misc images */
+		img.wp-post-image {
+			border-radius: var(--jn2-radius)
+		}
+
+		/* sidebar recent items */
+		.sidebar .widget_post_thumb li.item,
+		.sidebar .widget_post_thumb .item-img,
+		.sidebar .widget_post_thumb .item-img-inner,
+		.sidebar .widget_post_thumb img {
+			border-radius: var(--jn2-radius)
+		}
+	</style>
 
 	<link rel='stylesheet' id='emojify-css'
 		href='https://cdn.jsdelivr.net/npm/emojify.js@1.1.0/dist/css/basic/emojify.min.css?ver=1.1.0' type='text/css'
