@@ -1,3 +1,6 @@
+/* remove radius and shadow from outer container */
+.container,.container.clearfix{border-radius:0!important;box-shadow:none!important}
+.container:hover,.container.clearfix:hover{box-shadow:none!important}
 /* override: remove border and shadow from list item content */
 .post-loop-default .item-content{border:0!important;box-shadow:none!important}
 /* tweak: move bottom-right svg inward within item meta */
