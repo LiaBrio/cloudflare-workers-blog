@@ -1,3 +1,19 @@
+/* override: remove border and shadow from list item content */
+.post-loop-default .item-content{border:0!important;box-shadow:none!important}
+/* tweak: move bottom-right svg inward within item meta */
+.post-loop-default .item-meta{padding-right:8px!important;padding-bottom:6px!important}
+.post-loop-default .item-meta .item-meta-right{margin-right:2px}
+.post-loop-default .item-meta .item-meta-li .wi svg{transform:translate(-1px,-1px)}
+/* spacing: add gap between items and keep hover from collapsing it */
+.post-loop-default .item{margin-bottom:12px}
+.post-loop-default .item:last-child{margin-bottom:0}
+.post-loop-default .item,.post-loop-default .item:hover{box-shadow:none!important}
+@media(min-width:768px){
+    .post-loop-default .item:hover{margin:0 0 12px!important;padding:20px 0!important}
+}
+@media(max-width:767px){
+    .post-loop-default .item:hover{margin:0 0 12px!important;padding:15px 0!important}
+}
 /*!* Bootstrap v3.3.7 (http://getbootstrap.com)
 * Copyright 2011-2016 Twitter,Inc.
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)*//*!normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css*/@-webkit-keyframes rotating {
