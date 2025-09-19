@@ -10,7 +10,6 @@
 /* spacing: add gap between items and keep hover from collapsing it */
 .post-loop-default .item{margin-bottom:12px}
 .post-loop-default .item:last-child{margin-bottom:0}
-.post-loop-default .item,.post-loop-default .item:hover{box-shadow:none!important}
 @media(min-width:768px){
     .post-loop-default .item:hover{margin:0 0 12px!important;padding:20px 0!important}
 }
