@@ -6,7 +6,7 @@
 /* tweak: move bottom-right svg inward within item meta */
 .post-loop-default .item-meta{padding-right:8px!important;padding-bottom:6px!important}
 .post-loop-default .item-meta .item-meta-right{margin-right:2px}
-.post-loop-default .item-meta .item-meta-li .wi svg{transform:translate(-1px,-1px)}
+.post-loop-default .item-meta .item-meta-li .wi svg{transform:translate(-31px,-1px)}
 /* spacing: add gap between items and keep hover from collapsing it */
 .post-loop-default .item{margin-bottom:12px}
 .post-loop-default .item:last-child{margin-bottom:0}
@@ -12839,13 +12839,13 @@ body>header.header.header-style-2 .icon-bar {
 	display:-webkit-flex;
 	display:-ms-flexbox;
 	display:flex;
-	padding:20px 0;
+	padding:20px;
 	border-bottom:1px solid rgba(239,239,239,.8);
 	overflow:hidden
 }
 @media(max-width:767px) {
 	.post-loop-default .item {
-	padding:15px 0
+	padding:15px
 }
 }.post-loop-default .item:hover {
 	margin:0 -20px;
